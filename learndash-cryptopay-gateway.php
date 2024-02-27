@@ -25,11 +25,15 @@ defined('ABSPATH') || exit;
  * Requires PHP: 8.1
 */
 
+// Autoload
+require_once __DIR__ . '/vendor/autoload.php';
+
+use BeycanPress\CryptoPay\Integrator\Helpers;
+
 define('LDLMS_CRYPTOPAY_FILE', __FILE__);
 define('LDLMS_CRYPTOPAY_VERSION', '1.0.3');
 define('LDLMS_CRYPTOPAY_URL', plugin_dir_url(__FILE__));
 define('LDLMS_CRYPTOPAY_DIR', plugin_dir_path(__FILE__));
-
 
 add_action('plugins_loaded', function (): void {
 
@@ -46,7 +50,8 @@ add_action('plugins_loaded', function (): void {
         return;
     }
 
-    if (false) {
+    if (Helpers::bothExists()) {
+        new BeycanPress\CryptoPay\LearnDash\Initialize();
     } else {
         add_action('admin_notices', function (): void {
             ?>
