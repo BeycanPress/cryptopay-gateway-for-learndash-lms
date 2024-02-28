@@ -89,9 +89,7 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
     {
         parent::load_settings_values();
 
-        $guestPayment = $this->setting_option_values['guestPayment'] ?? '';
         $this->setting_option_values['theme'] = $this->setting_option_values['theme'] ?? 'light';
-        $this->setting_option_values['guestPayment'] = $guestPayment === 'yes' ? true : false;
     }
 
     /**
@@ -105,16 +103,6 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
                 'type'    => 'checkbox-switch',
                 'label'   => esc_html__('Active', 'ldlms-cryptopay'),
                 'value'   => $this->setting_option_values['enabled'] ?? '',
-                'options' => array(
-                    'yes' => '',
-                    ''    => '',
-                ),
-            ),
-            'guestPayment' => array(
-                'name'    => 'guestPayment',
-                'type'    => 'checkbox-switch',
-                'label'   => esc_html__('Allow Guest Payment', 'ldlms-cryptopay'),
-                'value'   => $this->setting_option_values['guestPayment'] ?? '',
                 'options' => array(
                     'yes' => '',
                     ''    => '',

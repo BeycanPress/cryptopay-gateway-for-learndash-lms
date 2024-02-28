@@ -35,7 +35,20 @@ define('LDLMS_CRYPTOPAY_VERSION', '1.0.3');
 define('LDLMS_CRYPTOPAY_URL', plugin_dir_url(__FILE__));
 define('LDLMS_CRYPTOPAY_DIR', plugin_dir_path(__FILE__));
 
+/**
+ * @return void
+ */
+function learndash_cryptopay_addModels(): void
+{
+    Helpers::registerModel(BeycanPress\CryptoPay\LearnDash\Models\TransactionsPro::class);
+    Helpers::registerLiteModel(BeycanPress\CryptoPay\LearnDash\Models\TransactionsLite::class);
+}
+
+learndash_cryptopay_addModels();
+
 add_action('plugins_loaded', function (): void {
+
+    learndash_cryptopay_addModels();
 
     load_plugin_textdomain('ldlms-cryptopay', false, basename(__DIR__) . '/languages');
 

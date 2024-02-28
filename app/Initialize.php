@@ -14,6 +14,10 @@ class Initialize
     public function __construct()
     {
         Helpers::registerIntegration('learndash');
+        Helpers::createTransactionPage(
+            esc_html__('LearnDash transactions', 'cryptopay'),
+            'learndash',
+        );
 
         add_filter('learndash_payment_gateways', [$this, 'registerGateway']);
         add_action('learndash_settings_sections_init', [$this, 'registerSection']);

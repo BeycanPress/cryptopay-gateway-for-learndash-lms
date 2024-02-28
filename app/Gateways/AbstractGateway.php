@@ -52,13 +52,30 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     protected $account_id;
 
     /**
+     * @var \WP_User
+     */
+    // phpcs:ignore
+    protected $user;
+
+    /**
      * @param string $sectionClass
      */
     protected function __construct(string $sectionClass)
     {
         $this->sectionClass = $sectionClass;
-        $this->currency_code = mb_strtolower(learndash_get_currency_code());
+        $this->currency_code = mb_strtoupper(learndash_get_currency_code());
     }
+
+    /**
+     * @param Product $product
+     * @return void
+     */
+    abstract protected function start(Product $product): void;
+
+    /**
+     * @return array<string>
+     */
+    abstract protected function get_deps(): array;
 
     /**
      * @return bool
@@ -86,32 +103,6 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function add_extra_hooks(): void
     {
-        add_action('wp_footer', array($this, 'show_successful_message'));
-    }
-
-    /**
-     * @return void
-     */
-    public function show_successful_message(): void
-    {
-        if (empty($_GET[static::$ldPath])) {
-            return;
-        }
-
-        if ('success' !== $_GET[static::$ldPath]) {
-            return;
-        }
-
-        $message = is_user_logged_in()
-            ? __('Your transaction was successful.', 'ldlms-cryptopay')
-            : __('Your transaction was successful. Please log in to access your content.', 'ldlms-cryptopay');
-        ?>
-        <script type="text/javascript">
-            jQuery(document).ready(function () {
-                alert('<?php echo esc_html($message); ?>');
-            });
-        </script>
-        <?php
     }
 
     /**
@@ -143,38 +134,162 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         }
 
         $productId = absint($_POST['productId']);
-        $nonce = sanitize_text_field(wp_unslash($_POST['nonce']));
-
-        if (!isset($_POST['nonce']) && ! wp_verify_nonce($nonce, $this->get_nonce_name())) {
-            wp_send_json_error(
-                array(
-                    'message' => esc_html__('Nonce cannot verified!', 'ldlms-cryptopay'),
-                )
-            );
-        }
-
-        $product = \Product::find($productId);
+        $product = Product::find($productId);
 
         if (!$product) {
-            wp_send_json_error(
-                array(
-                    'message' => esc_html__('Product not found.', 'ldlms-cryptopay'),
-                )
-            );
+            wp_send_json_error([
+                'msg' => esc_html__('Product not found.', 'ldlms-cryptopay')
+            ]);
         }
 
-        wp_send_json_success();
+        $this->user = new \WP_User(get_current_user_id());
+        $productPricing = $this->user ? $product->get_pricing($this->user) : $product->get_pricing();
+
+        $coursePrice = apply_filters(
+            'learndash_get_price_by_coupon',
+            $productPricing->price,
+            $product->get_id(),
+            $this->user?->ID ?? 0
+        );
+
+        $paymentIntentData = null;
+        $subscriptionData  = null;
+
+        if ($product->is_price_type_paynow()) {
+            $paymentIntentData = $this->get_order_data($coursePrice, $product);
+        } elseif ($product->is_price_type_subscribe()) {
+            $subscriptionData = $this->get_subscription_data($coursePrice, $productPricing, $product);
+        }
+
+        wp_send_json_success($paymentIntentData ?? $subscriptionData);
     }
 
     /**
+     * @param float $amount
      * @param Product $product
-     * @return void
+     * @return array<mixed>
      */
-    private function startCryptoPayHtmlProcess(Product $product): void
+    private function get_order_data(float $amount, Product $product): array
     {
-        add_action('wp_footer', function () use ($product): void {
-            // TODO: Add your html here.
-        });
+        $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
+            array(
+                Transaction::$meta_key_gateway_name => $this::get_name(),
+                Transaction::$meta_key_price_type   => LEARNDASH_PRICE_TYPE_PAYNOW,
+                Transaction::$meta_key_pricing_info => \Learndash_Pricing_DTO::create(
+                    array(
+                        'currency' => $this->currency_code,
+                        'price'    => $amount,
+                    )
+                ),
+            )
+        );
+
+        $item = [
+            'amount' => $amount,
+            'currency' => $this->currency_code
+        ];
+
+        $metadata = array_merge(
+            array(
+                'is_learndash'      => true,
+                'learndash_version' => LEARNDASH_VERSION,
+                'post_id'           => $product->get_id(),
+            ),
+            array_map(
+                function ($value) {
+                    return is_array($value) ? wp_json_encode($value) : $value;
+                },
+                $transactionMetaDto->to_array()
+            )
+        );
+
+        return array(
+            'item'         => $item,
+            'metadata'     => $metadata
+        );
+    }
+
+    /**
+     *
+     * @param float                 $amount  Amount.
+     * @param \Learndash_Pricing_DTO $pricing Pricing DTO.
+     * @param Product               $product Product.
+     *
+     * @throws Exception Exception.
+     *
+     * @return array{metadata: array<mixed>, items: array<mixed>|null, payment_data: array<mixed>}
+     */
+    private function get_subscription_data(float $amount, \Learndash_Pricing_DTO $pricing, Product $product): array
+    {
+        if (empty($pricing->duration_length)) {
+            throw new Exception(__('The Billing Cycle Interval value must be set.', 'learndash'));
+        } elseif (0 === $pricing->duration_value) {
+            throw new Exception(__('The minimum Billing Cycle value is 1.', 'learndash'));
+        }
+
+        $trialDurationInDays = $this->map_trial_duration_in_days(
+            $pricing->trial_duration_value,
+            $pricing->trial_duration_length
+        );
+
+        $hasTrial         = $trialDurationInDays > 0;
+        $courseTrialPrice = $hasTrial ? $pricing->trial_price : 0.;
+
+        $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
+            array(
+                Transaction::$meta_key_gateway_name   => $this::get_name(),
+                Transaction::$meta_key_price_type     => LEARNDASH_PRICE_TYPE_SUBSCRIBE,
+                Transaction::$meta_key_pricing_info   => $pricing,
+                Transaction::$meta_key_has_trial      => $hasTrial,
+                Transaction::$meta_key_has_free_trial => $hasTrial && 0. === $courseTrialPrice,
+            )
+        );
+
+        $item = [
+            'amount'    => $amount,
+            'currency' => $this->currency_code,
+        ];
+
+        $metadata = array_merge(
+            array(
+                'is_learndash'      => true,
+                'learndash_version' => LEARNDASH_VERSION,
+                'post_id'           => $product->get_id(),
+                'trial_period_days' => $trialDurationInDays > 0 ? $trialDurationInDays : null,
+            ),
+            array_map(
+                function ($value) {
+                    return is_array($value) ? wp_json_encode($value) : $value;
+                },
+                $transactionMetaDto->to_array()
+            )
+        );
+
+        return array(
+            'item'         => $item,
+            'metadata'     => $metadata,
+        );
+    }
+
+    /**
+     * @param int $durationValue
+     * @param string $durationLength
+     * @return int
+     */
+    private function map_trial_duration_in_days(int $durationValue, string $durationLength): int
+    {
+        if (0 === $durationValue || empty($durationLength)) {
+            return 0;
+        }
+
+        $durationNumberInDaysByLength = array(
+            'D' => 1,
+            'W' => 7,
+            'M' => 30,
+            'Y' => 365,
+        );
+
+        return $durationValue * $durationNumberInDaysByLength[$durationLength];
     }
 
     /**
@@ -184,24 +299,24 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function map_payment_button_markup(array $params, \WP_Post $post): string
     {
-        if (!is_user_logged_in() && !$this->settings['guestPayment']) {
-            return '';
-        }
-
-        $product = Product::find(absint($post->ID));
-        $this->startCryptoPayHtmlProcess($product);
-
         $buttonLabel = $this->map_payment_button_label(
             static::$title,
             $post
         );
 
+        if (!is_user_logged_in()) {
+            $loginUrl = learndash_get_login_url();
+            return '<a href="' . esc_url($loginUrl) . '" class="ldlms-cp-btn">' . esc_attr($buttonLabel) . '</a>';
+        }
+
+        $product = Product::find(absint($post->ID));
+        $this->start($product);
+
         $jsonData = [
-            'productId' => $product->get_id(),
-            'nonce'     => wp_create_nonce($this->get_nonce_name()),
+            'productId' => $product->get_id()
         ];
 
-        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="' . esc_attr(\Learndash_Payment_Button::map_button_class_name()) . ' ldlms-cp-btn" type="button" data-name="' . esc_attr(static::$name) . '" data-json="\'' . esc_attr(json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
+        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="ldlms-cp-btn" type="button" data-name="' . esc_attr(static::$name) . '" data-json="\'' . esc_attr(json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
 
         return $button;
     }
@@ -218,7 +333,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         $meta = array_merge(
             $entity->metadata ? $entity->metadata->toArray() : array(),
             array(
-                Transaction::$meta_key_gateway_transaction => Learndash_Transaction_Gateway_Transaction_DTO::create(
+                Transaction::$meta_key_gateway_transaction => \Learndash_Transaction_Gateway_Transaction_DTO::create(
                     array(
                         'id'    => $is_subscription ? $entity->subscription : $entity->payment_intent,
                         'event' => $entity,
@@ -251,8 +366,19 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function enqueue_scripts(): void
     {
+        $deps = array_merge(array('jquery'), $this->get_deps());
         wp_enqueue_style('ldlms-cp-style', LDLMS_CRYPTOPAY_URL . 'assets/css/main.css', array(), LDLMS_CRYPTOPAY_VERSION);
-        wp_enqueue_script('ldlms-cp-script', LDLMS_CRYPTOPAY_URL . 'assets/js/main.js', array('jquery'), LDLMS_CRYPTOPAY_VERSION, true);
+        wp_enqueue_script('ldlms-cp-script', LDLMS_CRYPTOPAY_URL . 'assets/js/main.js', $deps, LDLMS_CRYPTOPAY_VERSION, true);
+
+        $ajaxUrl = admin_url('admin-ajax.php');
+        $action = $this->get_ajax_action_name_setup();
+        wp_localize_script('ldlms-cp-script', 'LDLMSCP', [
+            'action' => $action,
+            'ajaxUrl' => $ajaxUrl,
+            'lang' => [
+                'waiting' => esc_html__('Please wait...', 'ldlms-cryptopay'),
+            ]
+        ]);
     }
 
     /**

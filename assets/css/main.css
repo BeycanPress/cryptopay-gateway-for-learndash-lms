@@ -1,9 +1,8 @@
 .ldlms-cp-btn {
     border: 0;
     border-radius: 0;
-    color: #00a2e8;
+    color: #000 !important;
     display: block !important;
-    font-size: 16px;
     font-size: 14px !important;
     font-style: normal;
     font-variant: normal;
@@ -15,4 +14,10 @@
     text-transform: none;
     transition: none;
     width: 100% !important;
+    background: #fff;
+}
+
+.ldlms-cp-btn:hover {
+    background: #fafafa !important;
+    color: #495255 !important;
 }

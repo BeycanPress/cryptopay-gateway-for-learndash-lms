@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace BeycanPress\CryptoPay\Integrator;
 
 use BeycanPress\CryptoPay\Loader;
+use BeycanPress\CryptoPay\PluginHero\Hook;
 use BeycanPress\CryptoPay\Helpers as ProHelpers;
+use BeycanPress\CryptoPay\Pages\TransactionPage;
+use BeycanPress\CryptoPay\Models\AbstractTransaction;
+// Lite
 use BeycanPress\CryptoPayLite\Loader as LiteLoader;
 use BeycanPress\CryptoPayLite\Helpers as LiteHelpers;
+use BeycanPress\CryptoPayLite\PluginHero\Hook as LiteHook;
+use BeycanPress\CryptoPayLite\Pages\TransactionPage as LiteTransactionPage;
+use BeycanPress\CryptoPayLite\Models\AbstractTransaction as LiteAbstractTransaction;
 
 class Helpers
 {
@@ -47,6 +54,56 @@ class Helpers
 
         if (self::liteExists()) {
             LiteHelpers::registerIntegration($addon);
+        }
+    }
+
+    /**
+     * @param array<mixed> ...$args
+     * @return void
+     */
+    // phpcs:ignore
+    public static function createTransactionPage(...$args): void
+    {
+        if (is_admin()) {
+            if (self::exists()) {
+                new TransactionPage(...$args);
+            }
+
+            if (self::liteExists()) {
+                new LiteTransactionPage(...$args);
+            }
+        }
+    }
+
+    /**
+     * @param string $modelClass
+     * @return void
+     */
+    public static function registerModel(string $modelClass): void
+    {
+        if (self::exists() && class_exists($modelClass)) {
+            $model = new $modelClass();
+            Hook::addFilter('models', function (array $models) use ($model): array {
+                return array_merge($models, [
+                    $model->addon => $model
+                ]);
+            });
+        }
+    }
+
+    /**
+     * @param string $modelClass
+     * @return void
+     */
+    public static function registerLiteModel(string $modelClass): void
+    {
+        if (self::liteExists() && class_exists($modelClass)) {
+            $model = new $modelClass();
+            LiteHook::addFilter('models', function (array $models) use ($model): array {
+                return array_merge($models, [
+                    $model->addon => $model
+                ]);
+            });
         }
     }
 
