@@ -31,7 +31,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use BeycanPress\CryptoPay\Integrator\Helpers;
 
 define('LDLMS_CRYPTOPAY_FILE', __FILE__);
-define('LDLMS_CRYPTOPAY_VERSION', '1.0.3');
+define('LDLMS_CRYPTOPAY_VERSION', '1.0.0');
 define('LDLMS_CRYPTOPAY_URL', plugin_dir_url(__FILE__));
 define('LDLMS_CRYPTOPAY_DIR', plugin_dir_path(__FILE__));
 
