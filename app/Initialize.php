@@ -31,9 +31,15 @@ class Initialize
      */
     public function registerGateway(array $gateways): array
     {
-        return array_merge($gateways, [
-            new Gateways\GatewayLite()
-        ]);
+        if (Helpers::exists()) {
+            $gateways[] = new Gateways\GatewayPro();
+        }
+
+        if (Helpers::liteExists()) {
+            $gateways[] = new Gateways\GatewayLite();
+        }
+
+        return $gateways;
     }
 
     /**
@@ -41,6 +47,12 @@ class Initialize
      */
     public function registerSection(): void
     {
-        Sections\SectionLite::add_section_instance();
+        if (Helpers::exists()) {
+            Sections\SectionPro::add_section_instance();
+        }
+
+        if (Helpers::liteExists()) {
+            Sections\SectionLite::add_section_instance();
+        }
     }
 }

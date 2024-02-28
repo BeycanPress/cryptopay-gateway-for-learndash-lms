@@ -9,25 +9,25 @@ declare(strict_types=1);
 namespace BeycanPress\CryptoPay\LearnDash\Gateways;
 
 use LearnDash\Core\Models\Product;
-use BeycanPress\CryptoPayLite\Payment;
-use BeycanPress\CryptoPayLite\Helpers;
-use BeycanPress\CryptoPayLite\PluginHero\Hook;
-use BeycanPress\CryptoPay\LearnDash\Sections\SectionLite;
+use BeycanPress\CryptoPay\Payment;
+use BeycanPress\CryptoPay\Helpers;
+use BeycanPress\CryptoPay\PluginHero\Hook;
+use BeycanPress\CryptoPay\LearnDash\Sections\SectionPro;
 
-class GatewayLite extends AbstractGateway
+class GatewayPro extends AbstractGateway
 {
-    protected static string $name = 'cryptopay_lite';
+    protected static string $name = 'cryptopay';
 
-    protected static string $title = 'CryptoPay Lite';
+    protected static string $title = 'CryptoPay';
 
-    protected static string $ldPath = 'ld_cryptopay_lite';
+    protected static string $ldPath = 'ld_cryptopay';
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        parent::__construct(SectionLite::class);
+        parent::__construct(SectionPro::class);
         Hook::addFilter('before_payment_finished_learndash', [$this, 'cpPaymentFinished']);
         Hook::addFilter('payment_redirect_urls_learndash', [$this, 'cpPaymentRedirectUrls']);
     }

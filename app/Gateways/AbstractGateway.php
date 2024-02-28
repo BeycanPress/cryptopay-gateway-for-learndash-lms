@@ -67,6 +67,45 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     }
 
     /**
+     * @param object $data
+     * @return object
+     */
+    public function cpPaymentFinished(object $data): object
+    {
+        $user = new \WP_User($data->getUserId());
+        $metadata = $data->getParams()->get('metadata');
+        $product = Product::find(absint($metadata->post_id));
+        $accessUpdates = $this->add_access_to_products([$product], $user);
+        $txId = $this->record_transaction((array) $metadata, $product->get_post(), $user);
+
+        foreach ($accessUpdates as $productId => $update) {
+            if ($update) {
+                $this->log_info('User enrolling into Product[' . $productId . '] success.');
+            } else {
+                $this->log_info('User enrolling into Product[' . $productId . '] failed.');
+            }
+        }
+
+        $data->getOrder()->setId(intval($txId));
+
+        return $data;
+    }
+
+    /**
+     * @param object $data
+     * @return array<string>
+     */
+    public function cpPaymentRedirectUrls(object $data): array
+    {
+        $productId = $data->getParams()->get('metadata.post_id');
+        $product = Product::find(absint($productId));
+        return [
+            'success' => get_permalink($product->get_post()),
+            'failed' => $this->get_url_fail([$product]),
+        ];
+    }
+
+    /**
      * @param Product $product
      * @return void
      */

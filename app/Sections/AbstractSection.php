@@ -117,8 +117,8 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
                     'dark'  => esc_html__('Dark', 'ldlms-cryptopay'),
                 ),
                 'default'   => 'light',
-                'value'     => 'light',
-            )
+                'value'     => $this->setting_option_values['theme'] ?? 'light',
+            ),
         );
 
         $this->setting_option_fields = apply_filters(
