@@ -26,11 +26,6 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     /**
      * @var string
      */
-    protected static string $ldPath;
-
-    /**
-     * @var string
-     */
     protected string $sectionClass;
 
     /**
@@ -194,10 +189,16 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         $paymentIntentData = null;
         $subscriptionData  = null;
 
-        if ($product->is_price_type_paynow()) {
-            $paymentIntentData = $this->get_order_data($coursePrice, $product);
-        } elseif ($product->is_price_type_subscribe()) {
-            $subscriptionData = $this->get_subscription_data($coursePrice, $productPricing, $product);
+        try {
+            if ($product->is_price_type_paynow()) {
+                $paymentIntentData = $this->get_order_data($coursePrice, $product);
+            } elseif ($product->is_price_type_subscribe()) {
+                $subscriptionData = $this->get_subscription_data($coursePrice, $productPricing, $product);
+            }
+        } catch (\Throwable $th) {
+            wp_send_json_error([
+                'msg' => $th->getMessage()
+            ]);
         }
 
         wp_send_json_success($paymentIntentData ?? $subscriptionData);
@@ -212,12 +213,12 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     {
         $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
             array(
-                Transaction::$meta_key_gateway_name => $this::get_name(),
+                Transaction::$meta_key_gateway_name => self::get_name(),
                 Transaction::$meta_key_price_type   => LEARNDASH_PRICE_TYPE_PAYNOW,
                 Transaction::$meta_key_pricing_info => \Learndash_Pricing_DTO::create(
                     array(
                         'currency' => $this->currency_code,
-                        'price'    => $amount,
+                        'price'    => number_format($amount / 100, 2, '.', ''),
                     )
                 ),
             )
@@ -254,16 +255,16 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      * @param \Learndash_Pricing_DTO $pricing Pricing DTO.
      * @param Product               $product Product.
      *
-     * @throws Exception Exception.
+     * @throws \Exception Exception.
      *
-     * @return array{metadata: array<mixed>, items: array<mixed>|null, payment_data: array<mixed>}
+     * @return array<string,mixed>
      */
     private function get_subscription_data(float $amount, \Learndash_Pricing_DTO $pricing, Product $product): array
     {
         if (empty($pricing->duration_length)) {
-            throw new Exception(__('The Billing Cycle Interval value must be set.', 'learndash'));
+            throw new \Exception(__('The Billing Cycle Interval value must be set.', 'learndash'));
         } elseif (0 === $pricing->duration_value) {
-            throw new Exception(__('The minimum Billing Cycle value is 1.', 'learndash'));
+            throw new \Exception(__('The minimum Billing Cycle value is 1.', 'learndash'));
         }
 
         $trialDurationInDays = $this->map_trial_duration_in_days(
@@ -276,7 +277,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
 
         $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
             array(
-                Transaction::$meta_key_gateway_name   => $this::get_name(),
+                Transaction::$meta_key_gateway_name   => self::get_name(),
                 Transaction::$meta_key_price_type     => LEARNDASH_PRICE_TYPE_SUBSCRIBE,
                 Transaction::$meta_key_pricing_info   => $pricing,
                 Transaction::$meta_key_has_trial      => $hasTrial,
@@ -339,7 +340,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     public function map_payment_button_markup(array $params, \WP_Post $post): string
     {
         $buttonLabel = $this->map_payment_button_label(
-            static::$title,
+            self::get_label(),
             $post
         );
 
@@ -355,7 +356,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             'productId' => $product->get_id()
         ];
 
-        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="ldlms-cp-btn" type="button" data-name="' . esc_attr(static::$name) . '" data-json="\'' . esc_attr(json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
+        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="ldlms-cp-btn" type="button" data-name="' . esc_attr(self::get_name()) . '" data-json="\'' . esc_attr(json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
 
         return $button;
     }

@@ -55,13 +55,13 @@
                             cryptoPayLiteProcess(response.data);
                         }
                     } else {
-                        helpers.errorPopup(response.msg);
+                        helpers.errorPopup(response.data.msg);
                     }
                 },
                 error: (error) => {
                     console.log(error);
-                    if (error?.response?.msg) {
-                        helpers.errorPopup(error.response.msg);
+                    if (error?.response?.data?.msg) {
+                        helpers.errorPopup(error.response.data.msg);
                     } else {
                         alert(error.responseText);
                     }

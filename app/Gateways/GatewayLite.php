@@ -16,11 +16,9 @@ use BeycanPress\CryptoPay\LearnDash\Sections\SectionLite;
 
 class GatewayLite extends AbstractGateway
 {
-    protected static string $name = 'cryptopay_lite';
+    public static string $name = 'cryptopay_lite';
 
-    protected static string $title = 'CryptoPay Lite';
-
-    protected static string $ldPath = 'ld_cryptopay_lite';
+    public static string $title = 'CryptoPay Lite';
 
     /**
      * Constructor
