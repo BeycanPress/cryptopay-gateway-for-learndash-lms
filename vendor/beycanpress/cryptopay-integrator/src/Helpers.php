@@ -8,13 +8,13 @@ use BeycanPress\CryptoPay\Loader;
 use BeycanPress\CryptoPay\PluginHero\Hook;
 use BeycanPress\CryptoPay\Helpers as ProHelpers;
 use BeycanPress\CryptoPay\Pages\TransactionPage;
-use BeycanPress\CryptoPay\Models\AbstractTransaction;
+use BeycanPress\CryptoPay\PluginHero\Http\Response;
 // Lite
 use BeycanPress\CryptoPayLite\Loader as LiteLoader;
 use BeycanPress\CryptoPayLite\Helpers as LiteHelpers;
 use BeycanPress\CryptoPayLite\PluginHero\Hook as LiteHook;
+use BeycanPress\CryptoPayLite\PluginHero\Http\Response as LiteResponse;
 use BeycanPress\CryptoPayLite\Pages\TransactionPage as LiteTransactionPage;
-use BeycanPress\CryptoPayLite\Models\AbstractTransaction as LiteAbstractTransaction;
 
 class Helpers
 {
@@ -109,15 +109,31 @@ class Helpers
 
     /**
      * @param string $method
-     * @param array<mixed> $args
+     * @param array<mixed> ...$args
      * @return mixed
      */
-    public static function run(string $method, array $args = []): mixed
+    // phpcs:ignore
+    public static function run(string $method, ...$args): mixed
     {
         if (self::exists()) {
             return ProHelpers::$method(...$args);
         } else {
             return LiteHelpers::$method(...$args);
+        }
+    }
+
+    /**
+     * @param string $method
+     * @param array<mixed> ...$args
+     * @return mixed
+     */
+    // phpcs:ignore
+    public static function response(string $method, ...$args): mixed
+    {
+        if (self::exists()) {
+            return Response::$method(...$args);
+        } else {
+            return LiteResponse::$method(...$args);
         }
     }
 }

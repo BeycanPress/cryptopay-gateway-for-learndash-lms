@@ -15,7 +15,7 @@ class Initialize
     {
         Helpers::registerIntegration('learndash');
         Helpers::createTransactionPage(
-            esc_html__('LearnDash transactions', 'cryptopay'),
+            esc_html__('LearnDash transactions', 'ldlms-cryptopay'),
             'learndash',
         );
 
