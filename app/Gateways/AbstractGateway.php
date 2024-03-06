@@ -212,16 +212,16 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     private function get_order_data(float $amount, Product $product): array
     {
         $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
-            array(
+            [
                 Transaction::$meta_key_gateway_name => self::get_name(),
                 Transaction::$meta_key_price_type   => LEARNDASH_PRICE_TYPE_PAYNOW,
                 Transaction::$meta_key_pricing_info => \Learndash_Pricing_DTO::create(
-                    array(
+                    [
                         'currency' => $this->currency_code,
                         'price'    => number_format($amount / 100, 2, '.', ''),
-                    )
+                    ]
                 ),
-            )
+            ]
         );
 
         $item = [
@@ -230,11 +230,11 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         ];
 
         $metadata = array_merge(
-            array(
+            [
                 'is_learndash'      => true,
                 'learndash_version' => LEARNDASH_VERSION,
                 'post_id'           => $product->get_id(),
-            ),
+            ],
             array_map(
                 function ($value) {
                     return is_array($value) ? wp_json_encode($value) : $value;
@@ -243,10 +243,10 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             )
         );
 
-        return array(
+        return [
             'item'         => $item,
             'metadata'     => $metadata
-        );
+        ];
     }
 
     /**
@@ -276,13 +276,13 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         $courseTrialPrice = $hasTrial ? $pricing->trial_price : 0.;
 
         $transactionMetaDto = \Learndash_Transaction_Meta_DTO::create(
-            array(
+            [
                 Transaction::$meta_key_gateway_name   => self::get_name(),
                 Transaction::$meta_key_price_type     => LEARNDASH_PRICE_TYPE_SUBSCRIBE,
                 Transaction::$meta_key_pricing_info   => $pricing,
                 Transaction::$meta_key_has_trial      => $hasTrial,
                 Transaction::$meta_key_has_free_trial => $hasTrial && 0. === $courseTrialPrice,
-            )
+            ]
         );
 
         $item = [
@@ -291,12 +291,12 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         ];
 
         $metadata = array_merge(
-            array(
+            [
                 'is_learndash'      => true,
                 'learndash_version' => LEARNDASH_VERSION,
                 'post_id'           => $product->get_id(),
                 'trial_period_days' => $trialDurationInDays > 0 ? $trialDurationInDays : null,
-            ),
+            ],
             array_map(
                 function ($value) {
                     return is_array($value) ? wp_json_encode($value) : $value;
@@ -305,10 +305,10 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             )
         );
 
-        return array(
+        return [
             'item'         => $item,
             'metadata'     => $metadata,
-        );
+        ];
     }
 
     /**
@@ -322,12 +322,12 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             return 0;
         }
 
-        $durationNumberInDaysByLength = array(
+        $durationNumberInDaysByLength = [
             'D' => 1,
             'W' => 7,
             'M' => 30,
             'Y' => 365,
-        );
+        ];
 
         return $durationValue * $durationNumberInDaysByLength[$durationLength];
     }
@@ -371,15 +371,15 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
         $is_subscription = 'subscription' === $entity->mode;
 
         $meta = array_merge(
-            $entity->metadata ? $entity->metadata->toArray() : array(),
-            array(
+            $entity->metadata ? $entity->metadata->toArray() : [],
+            [
                 Transaction::$meta_key_gateway_transaction => \Learndash_Transaction_Gateway_Transaction_DTO::create(
-                    array(
+                    [
                         'id'    => $is_subscription ? $entity->subscription : $entity->payment_intent,
                         'event' => $entity,
-                    )
+                    ]
                 ),
-            )
+            ]
         );
 
         $meta = $this->process_legacy_meta(
@@ -406,8 +406,8 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function enqueue_scripts(): void
     {
-        $deps = array_merge(array('jquery'), $this->get_deps());
-        wp_enqueue_style('ldlms-cp-style', LDLMS_CRYPTOPAY_URL . 'assets/css/main.css', array(), LDLMS_CRYPTOPAY_VERSION);
+        $deps = array_merge(['jquery'], $this->get_deps());
+        wp_enqueue_style('ldlms-cp-style', LDLMS_CRYPTOPAY_URL . 'assets/css/main.css', [], LDLMS_CRYPTOPAY_VERSION);
         wp_enqueue_script('ldlms-cp-script', LDLMS_CRYPTOPAY_URL . 'assets/js/main.js', $deps, LDLMS_CRYPTOPAY_VERSION, true);
 
         $ajaxUrl = admin_url('admin-ajax.php');

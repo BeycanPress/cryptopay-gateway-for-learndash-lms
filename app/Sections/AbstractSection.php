@@ -97,29 +97,29 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
      */
     public function load_settings_fields(): void
     {
-        $this->setting_option_fields = array(
-            'enabled' => array(
+        $this->setting_option_fields = [
+            'enabled' => [
                 'name'    => 'enabled',
                 'type'    => 'checkbox-switch',
                 'label'   => esc_html__('Active', 'ldlms-cryptopay'),
                 'value'   => $this->setting_option_values['enabled'] ?? '',
-                'options' => array(
+                'options' => [
                     'yes' => '',
                     ''    => '',
-                ),
-            ),
-            'theme' => array(
+                ],
+            ],
+            'theme' => [
                 'name'      => 'theme',
                 'label'     => esc_html__('Theme', 'ldlms-cryptopay'),
                 'type'      => 'select',
-                'options'   => array(
+                'options'   => [
                     'light' => esc_html__('Light', 'ldlms-cryptopay'),
                     'dark'  => esc_html__('Dark', 'ldlms-cryptopay'),
-                ),
+                ],
                 'default'   => 'light',
                 'value'     => $this->setting_option_values['theme'] ?? 'light',
-            ),
-        );
+            ],
+        ];
 
         $this->setting_option_fields = apply_filters(
             'learndash_settings_fields',
@@ -154,7 +154,7 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
 
         if (isset($_POST['learndash_settings_payments_list_nonce'])) {
             if (!is_array($oldValue)) {
-                $oldValue = array();
+                $oldValue = [];
             }
 
             foreach ($value as $valueIdx => $valueVal) {
