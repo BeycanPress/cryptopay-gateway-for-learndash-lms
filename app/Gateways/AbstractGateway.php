@@ -167,11 +167,10 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function setup_payment(): void
     {
-        if (empty($_POST['productId'])) {
+        if (!$productId = isset($_POST['productId']) ? absint($_POST['productId']) : 0) {
             return;
         }
 
-        $productId = absint($_POST['productId']);
         $product = Product::find($productId);
 
         if (!$product) {
