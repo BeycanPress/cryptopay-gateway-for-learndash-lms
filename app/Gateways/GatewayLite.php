@@ -48,7 +48,7 @@ class GatewayLite extends AbstractGateway
         $cp = (new Payment('learndash'))->modal();
 
         add_action('wp_footer', function () use ($cp): void {
-            echo $cp;
+            Helpers::ksesEcho($cp);
         });
     }
 

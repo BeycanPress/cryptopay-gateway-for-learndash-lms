@@ -53,25 +53,13 @@ add_action('plugins_loaded', function (): void {
     load_plugin_textdomain('ldlms-cryptopay', false, basename(__DIR__) . '/languages');
 
     if (!defined('LEARNDASH_VERSION')) {
-        add_action('admin_notices', function (): void {
-            ?>
-                <div class="notice notice-error">
-                    <p><?php echo sprintf(esc_html__('LearnDash LMS - CryptoPay Gateway: This plugin requires LearnDash LMS to work. You can buy LearnDash LMS by %s.', 'ldlms-cryptopay'), '<a href="https://www.learndash.com/" target="_blank">' . esc_html__('clicking here', 'ldlms-cryptopay') . '</a>'); ?></p>
-                </div>
-            <?php
-        });
+        Helpers::requirePluginMessage('LearnDash LMS', 'https://www.learndash.com/', false);
         return;
     }
 
     if (Helpers::bothExists()) {
         new BeycanPress\CryptoPay\LearnDash\Initialize();
     } else {
-        add_action('admin_notices', function (): void {
-            ?>
-                <div class="notice notice-error">
-                    <p><?php echo sprintf(esc_html__('LearnDash LMS - CryptoPay Gateway: This plugin is an extra feature plugin so it cannot do anything on its own. It needs CryptoPay to work. You can buy CryptoPay by %s.', 'ldlms-cryptopay'), '<a href="https://beycanpress.com/product/cryptopay-all-in-one-cryptocurrency-payments-for-wordpress/?utm_source=wp_org_addons&utm_medium=learndash_lms" target="_blank">' . esc_html__('clicking here', 'ldlms-cryptopay') . '</a>'); ?></p>
-                </div>
-            <?php
-        });
+        Helpers::requireCryptoPayMessage('LearnDash LMS');
     }
 });

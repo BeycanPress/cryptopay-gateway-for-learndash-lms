@@ -59,7 +59,6 @@
                     }
                 },
                 error: (error) => {
-                    console.log(error);
                     if (error?.response?.data?.msg) {
                         helpers.errorPopup(error.response.data.msg);
                     } else {

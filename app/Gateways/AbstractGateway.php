@@ -67,6 +67,10 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function cpPaymentFinished(object $data): object
     {
+        if (!$this->getStatus()) {
+            return $data;
+        }
+
         $user = new \WP_User($data->getUserId());
         $metadata = $data->getParams()->get('metadata');
         $product = Product::find(absint($metadata->post_id));
@@ -75,9 +79,9 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
 
         foreach ($accessUpdates as $productId => $update) {
             if ($update) {
-                $this->log_info('User enrolling into Product[' . $productId . '] success.');
+                $this->log_info('User enrolling into Product[' . esc_html($productId) . '] success.');
             } else {
-                $this->log_info('User enrolling into Product[' . $productId . '] failed.');
+                $this->log_info('User enrolling into Product[' . esc_html($productId) . '] failed.');
             }
         }
 
