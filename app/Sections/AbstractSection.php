@@ -77,6 +77,7 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
         $this->settings_section_key = 'settings_' . $gatewayName;
 
         $this->settings_section_listing_label = $gatewayTitle;
+        /* translators: %s: Gateway Title */
         $this->settings_section_label = sprintf(esc_html__('%s Settings', 'ldlms-cryptopay'), $gatewayTitle);
 
         parent::__construct();

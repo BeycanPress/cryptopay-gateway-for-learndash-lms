@@ -1,6 +1,6 @@
-=== Cryptocurrency Payment Gateway Plugin for LearnDash LMS by CryptoPay ===
+=== Cryptocurrency Payment Gateway for LearnDash LMS by CryptoPay ===
 Contributors: BeycanPress
-Tags: Bitcoin, Ethereum, Binance Smart Chain, Blockchain, Networks, Cryptocurrency, Payments, Gateway, WordPress, LearnDash LMS
+Tags: Bitcoin, Ethereum, Cryptocurrency, Payments, LearnDash LMS
 Requires at least: 5.0
 Tested up to: 6.5.0
 Requires PHP: 8.1
@@ -9,11 +9,11 @@ Version: 1.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Cryptocurrency Payment Gateway Plugin for LearnDash LMS, Cryptocurrency payments for WordPress, Bitcoin payments, Crypto payments, USDT, BTC, ETH, SOL
+Cryptocurrency Payment Gateway for LearnDash LMS, Cryptocurrency payments for WordPress, Bitcoin payments, Crypto payments, USDT, BTC, ETH, SOL
 
 == Description ==
 
-### Cryptocurrency Payment Gateway Plugin for LearnDash LMS by CryptoPay
+### Cryptocurrency Payment Gateway for LearnDash LMS by CryptoPay
 
 First of all, we would like to point out that this plugin is not a standalone plugin. This plugin is a **<a href="https://beycanpress.com/cryptopay/?utm_source=wporg_readme&utm_medium=cryptopay_learndash">cryptocurrency payment gateway for LearnDash LMS</a>**. In other words, users who want to sell courses with cryptocurrency payments can use WordPress and LearnDash LMS. However, this plugin is a plugin for CryptoPay and a cryptocurrency payment gateway for LearnDash LMS. So it's actually CryptoPay, which is the main plugin that handles cryptocurrency payments for WordPress. Therefore, users must have both plugins.
 

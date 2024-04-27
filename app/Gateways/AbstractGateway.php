@@ -167,6 +167,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function setup_payment(): void
     {
+        // Nonce verification in LearnDash side
         if (!$productId = isset($_POST['productId']) ? absint($_POST['productId']) : 0) {
             return;
         }
@@ -265,9 +266,9 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     private function get_subscription_data(float $amount, \Learndash_Pricing_DTO $pricing, Product $product): array
     {
         if (empty($pricing->duration_length)) {
-            throw new \Exception(__('The Billing Cycle Interval value must be set.', 'learndash'));
+            throw new \Exception(esc_html__('The Billing Cycle Interval value must be set.', 'ldlms-cryptopay'));
         } elseif (0 === $pricing->duration_value) {
-            throw new \Exception(__('The minimum Billing Cycle value is 1.', 'learndash'));
+            throw new \Exception(esc_html__('The minimum Billing Cycle value is 1.', 'ldlms-cryptopay'));
         }
 
         $trialDurationInDays = $this->map_trial_duration_in_days(
@@ -359,7 +360,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             'productId' => $product->get_id()
         ];
 
-        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="ldlms-cp-btn" type="button" data-name="' . esc_attr(self::get_name()) . '" data-json="\'' . esc_attr(json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
+        $button = '<div class="' . esc_attr($this->get_form_class_name()) . '"><button class="ldlms-cp-btn" type="button" data-name="' . esc_attr(self::get_name()) . '" data-json="\'' . esc_attr(wp_json_encode($jsonData)) . '\'">' . esc_attr($buttonLabel) . '</button></div>';
 
         return $button;
     }
