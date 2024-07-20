@@ -18,10 +18,10 @@ defined('ABSPATH') || exit;
  * Author URI:  https://beycanpress.com
  * License:     GPLv3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: ldlms-cryptopay
- * Tags: Cryptopay, Cryptocurrency, WooCommerce, WordPress, MetaMask, Trust, Binance, Wallet, Ethereum, Bitcoin, Binance smart chain, Payment, Plugin, Gateway, Moralis, Converter, API, coin market cap, CMC
+ * Text Domain: cryptopay-gateway-for-learndash-lms
+ * Tags: Bitcoin, Ethereum, Cryptocurrency, Payments, LearnDash LMS
  * Requires at least: 5.0
- * Tested up to: 6.5.0
+ * Tested up to: 6.6
  * Requires PHP: 8.1
 */
 
@@ -50,14 +50,11 @@ add_action('plugins_loaded', function (): void {
 
     learndash_cryptopay_addModels();
 
-    load_plugin_textdomain('ldlms-cryptopay', false, basename(__DIR__) . '/languages');
+    load_plugin_textdomain('cryptopay-gateway-for-learndash-lms', false, basename(__DIR__) . '/languages');
 
     if (!defined('LEARNDASH_VERSION')) {
         Helpers::requirePluginMessage('LearnDash LMS', 'https://www.learndash.com/', false);
-        return;
-    }
-
-    if (Helpers::bothExists()) {
+    } elseif (Helpers::bothExists()) {
         new BeycanPress\CryptoPay\LearnDash\Initialize();
     } else {
         Helpers::requireCryptoPayMessage('LearnDash LMS');

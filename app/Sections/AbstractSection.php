@@ -78,7 +78,10 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
 
         $this->settings_section_listing_label = $gatewayTitle;
         /* translators: %s: Gateway Title */
-        $this->settings_section_label = sprintf(esc_html__('%s Settings', 'ldlms-cryptopay'), $gatewayTitle);
+        $this->settings_section_label = sprintf(
+            esc_html__('%s Settings', 'cryptopay-gateway-for-learndash-lms'),
+            $gatewayTitle
+        );
 
         parent::__construct();
     }
@@ -102,7 +105,7 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
             'enabled' => [
                 'name'    => 'enabled',
                 'type'    => 'checkbox-switch',
-                'label'   => esc_html__('Active', 'ldlms-cryptopay'),
+                'label'   => esc_html__('Active', 'cryptopay-gateway-for-learndash-lms'),
                 'value'   => $this->setting_option_values['enabled'] ?? '',
                 'options' => [
                     'yes' => '',
@@ -111,11 +114,11 @@ abstract class AbstractSection extends \LearnDash_Settings_Section
             ],
             'theme' => [
                 'name'      => 'theme',
-                'label'     => esc_html__('Theme', 'ldlms-cryptopay'),
+                'label'     => esc_html__('Theme', 'cryptopay-gateway-for-learndash-lms'),
                 'type'      => 'select',
                 'options'   => [
-                    'light' => esc_html__('Light', 'ldlms-cryptopay'),
-                    'dark'  => esc_html__('Dark', 'ldlms-cryptopay'),
+                    'light' => esc_html__('Light', 'cryptopay-gateway-for-learndash-lms'),
+                    'dark'  => esc_html__('Dark', 'cryptopay-gateway-for-learndash-lms'),
                 ],
                 'default'   => 'light',
                 'value'     => $this->setting_option_values['theme'] ?? 'light',

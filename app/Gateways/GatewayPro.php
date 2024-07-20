@@ -40,11 +40,11 @@ class GatewayPro extends AbstractGateway
             return;
         }
 
-        Hook::addFilter('theme', function () {
-            return $this->settings['theme'] ?? 'light';
+        Hook::addFilter('theme', function (array $theme) {
+            $theme['mode'] = isset($this->settings['theme']) ? $this->settings['theme'] : 'light';
+            return $theme;
         });
 
-        Helpers::addStyle('main.min.css');
         $cp = (new Payment('learndash'))->modal();
 
         add_action('wp_footer', function () use ($cp): void {

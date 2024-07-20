@@ -67,7 +67,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
      */
     public function cpPaymentFinished(object $data): object
     {
-        if (!$this->getStatus()) {
+        if (!$data->getStatus()) {
             return $data;
         }
 
@@ -176,7 +176,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
 
         if (!$product) {
             wp_send_json_error([
-                'msg' => esc_html__('Product not found.', 'ldlms-cryptopay')
+                'msg' => esc_html__('Product not found.', 'cryptopay-gateway-for-learndash-lms')
             ]);
         }
 
@@ -266,9 +266,9 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
     private function get_subscription_data(float $amount, \Learndash_Pricing_DTO $pricing, Product $product): array
     {
         if (empty($pricing->duration_length)) {
-            throw new \Exception(esc_html__('The Billing Cycle Interval value must be set.', 'ldlms-cryptopay'));
+            throw new \Exception(esc_html__('The Billing Cycle Interval value must be set.', 'cryptopay-gateway-for-learndash-lms'));
         } elseif (0 === $pricing->duration_value) {
-            throw new \Exception(esc_html__('The minimum Billing Cycle value is 1.', 'ldlms-cryptopay'));
+            throw new \Exception(esc_html__('The minimum Billing Cycle value is 1.', 'cryptopay-gateway-for-learndash-lms'));
         }
 
         $trialDurationInDays = $this->map_trial_duration_in_days(
@@ -420,7 +420,7 @@ abstract class AbstractGateway extends \Learndash_Payment_Gateway
             'action' => $action,
             'ajaxUrl' => $ajaxUrl,
             'lang' => [
-                'waiting' => esc_html__('Please wait...', 'ldlms-cryptopay'),
+                'waiting' => esc_html__('Please wait...', 'cryptopay-gateway-for-learndash-lms'),
             ]
         ]);
     }

@@ -5,7 +5,7 @@
 
         let cryptoPayStartedApp;
         const cryptoPayProcess = (data) => {
-            CryptoPayModal.open();
+            CryptoPayApp.modal.open();
             if (!cryptoPayStartedApp) {
                 cryptoPayStartedApp = CryptoPayApp.start(data.item, {
                     metadata: data.metadata
@@ -19,7 +19,7 @@
 
         let cryptoPayLiteStartedApp;
         const cryptoPayLiteProcess = (data) => {
-            CryptoPayLiteModal.open();
+            CryptoPayLiteApp.modal.open();
             if (!cryptoPayLiteStartedApp) {
                 cryptoPayLiteStartedApp = CryptoPayLiteApp.start(data.item, {
                     metadata: data.metadata
