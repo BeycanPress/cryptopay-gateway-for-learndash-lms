@@ -1,20 +1,15 @@
 ## Cryptocurrency Payment Gateway Plugin for LearnDash LMS by CryptoPay
 
-First of all, we would like to point out that this plugin is not a standalone plugin. This plugin is a **<a href="https://beycanpress.com/cryptopay/?utm_source=github&utm_medium=cryptopay_learndash">cryptocurrency payment gateway for LearnDash LMS</a>**. In other words, users who want to sell courses with cryptocurrency payments can use WordPress and LearnDash LMS. However, this plugin is a plugin for CryptoPay and a cryptocurrency payment gateway for LearnDash LMS. So it's actually CryptoPay, which is the main plugin that handles cryptocurrency payments for WordPress. Therefore, users must have both plugins.
+### What does this plugin do?
 
-Thanks to this plugin, you can receive **<a href="https://beycanpress.com/cryptopay/?utm_source=github&utm_medium=cryptopay_learndash">cryptocurrency payments</a>** from many Blockchain networks, especially Bitcoin, Ethereum, Solana, and sell paid courses with cryptocurrencies on your WordPress site with the LearnDash LMS plugin.
+The world of Web3 and blockchain is evolving and popularizing day by day. Perhaps you are one of the pioneers in the growth of this ecosystem and perhaps you sell online courses. Considering that LearnDash LMS is the best way to sell online courses and trainings, and assuming that you are in the crypto and blockchain industry, wouldn't it be better for you and them to receive crypto payments from your customers?
 
-What is CryptoPay? (Click and watch video)
+With CryptoPay it's possible, with CryptoPay you can accept peer-to-peer cryptocurrency payments completely commission-free and our plugin integrates with 16+ WordPress plugins. Like LearnDash Crypto Payment Gateway by CryptoPay, which you can check out here.
 
-[![Cryptocurrency payment gateway for WordPress](https://img.youtube.com/vi/3vaoFL4XG10/0.jpg)](https://www.youtube.com/watch?v=3vaoFL4XG10)
-<br>
+### How does it work?
 
-Review CryptoPay Lite: **<a href="https://wordpress.org/plugins/cryptopay-wc-lite/">Cryptocurrency payment gateway for LearnDash LMS</a>**
+This plugin is an integration plugin, which means that it has no function on its own. The purpose of this plugin is to establish an integration between our payment gateway CryptoPay and the LearnDash LMS and allow you to sell your courses with cryptocurrencies. In the images below you can see how the plugin is enabled and visible as a LearnDash payment gateway.
 
-Review CryptoPay Premium: **<a href="https://beycanpress.com/cryptopay/?utm_source=github&utm_medium=cryptopay_learndash">Cryptocurrency payments for WooCommerce</a>**
-
-Review LearnDash LMS: **<a href="https://www.learndash.com/pricing-and-purchase/">LearnDash LMS</a>**
-
-See **<a href="https://cryptopay.beycanpress.net/" target="_blank">Demo</a>**
-
-Bitcoin, Ethereum, Binance, Solana, Tron, Avalanche, Polygon, MetaMask, TrustWallet, WalletConnect, Phantom Cryptocurrency payments gateway plugin for WordPress & WooCommerce, cryptocurrency wordpress, cryptocurrency woocommerce, cryptocurrency payments, cryptocurrency payments gateway, cryptocurrency payments for woocommerce, cryptocurrency payments for wordpress, bitcoin payment for wordpress, woocommerce crypto payments, wordpress crypto payments, wordPress cryptocurrency payment plugin, woocommerce cryptocurrency payment gateway, cryptocurrency payment gateway for woocommerce, crypto payments woocommerce, accept cryptocurrency payments
+<a href="https://ibb.co/BNxXxfC"><img src="https://i.ibb.co/k1fRfGS/Screenshot-1.png" alt="Screenshot-1" border="0"></a>
+<a href="https://ibb.co/cJcCXGJ"><img src="https://i.ibb.co/hsRZ1Ps/Screenshot-2.png" alt="Screenshot-2" border="0"></a>
+<a href="https://ibb.co/85bq680"><img src="https://i.ibb.co/YkXmpj3/Screenshot-3.png" alt="Screenshot-3" border="0"></a>
