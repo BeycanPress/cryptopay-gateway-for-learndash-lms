@@ -30,7 +30,7 @@ What is CryptoPay?
 
 **<a href="https://www.learndash.com/">Review LearnDash LMS</a>**
 
-See CryptoPay Demo **<a href="https://cryptopay.beycanpress.net/" target="_blank">Demo</a>**
+See CryptoPay **<a href="https://cryptopay.beycanpress.net/" target="_blank">Demo</a>**
 
 = Privacy notices =
 
