@@ -1,6 +1,7 @@
 /.git
 /.github
 /.wordpress-org
+.gitignore
 .distignore
 .gitattributes
 phpcs.xml

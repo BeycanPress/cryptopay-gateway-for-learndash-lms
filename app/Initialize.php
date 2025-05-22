@@ -14,10 +14,14 @@ class Initialize
     public function __construct()
     {
         Helpers::registerIntegration('learndash');
-        Helpers::createTransactionPage(
-            esc_html__('LearnDash transactions', 'cryptopay-gateway-for-learndash-lms'),
-            'learndash',
-        );
+
+        add_action('init', function (): void {
+            Helpers::createTransactionPage(
+                esc_html__('LearnDash transactions', 'cryptopay-gateway-for-learndash-lms'),
+                'learndash',
+                9
+            );
+        });
 
         add_filter('learndash_payment_gateways', [$this, 'registerGateway']);
         add_action('learndash_settings_sections_init', [$this, 'registerSection']);
@@ -48,10 +52,12 @@ class Initialize
     public function registerSection(): void
     {
         if (Helpers::exists()) {
+            /** @disregard */
             Sections\SectionPro::add_section_instance();
         }
 
         if (Helpers::liteExists()) {
+            /** @disregard */
             Sections\SectionLite::add_section_instance();
         }
     }
